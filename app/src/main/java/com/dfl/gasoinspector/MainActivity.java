@@ -7,9 +7,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +17,7 @@ import java.util.UUID;
 
 public class MainActivity extends Activity {
 
-    Button btnOn, btnOff;
-    TextView txtArduino, txtString, txtStringLength, sensorView0, sensorView1, sensorView2, sensorView3;
-    TextView txtSendorLDR;
+    TextView sensorView;
     Handler bluetoothIn;
 
     final int handlerState = 0;                         //used to identify handler message
@@ -41,21 +36,9 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-
         //Link the buttons and textViews to respective views
-        btnOn = (Button) findViewById(R.id.buttonOn);
-        btnOff = (Button) findViewById(R.id.buttonOff);
-        txtString = (TextView) findViewById(R.id.txtString);
-        txtStringLength = (TextView) findViewById(R.id.testView1);
-        sensorView0 = (TextView) findViewById(R.id.sensorView0);
-        sensorView1 = (TextView) findViewById(R.id.sensorView1);
-        sensorView2 = (TextView) findViewById(R.id.sensorView2);
-        sensorView3 = (TextView) findViewById(R.id.sensorView3);
-
-        txtSendorLDR = (TextView) findViewById(R.id.tv_sendorldr);
-
+        sensorView = findViewById(R.id.sensorView);
 
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -63,54 +46,17 @@ public class MainActivity extends Activity {
                     String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
                     recDataString.append(readMessage);                                    //keep appending to string until ~
                     int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
-                    if (endOfLineIndex > 0) {                                           // make sure there data before ~
+                    sensorView.setText(recDataString.toString());
+                    if (endOfLineIndex > 0) {                                  // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
-                        txtString.setText("Datos recibidos = " + dataInPrint);
-                        int dataLength = dataInPrint.length();                            //get length of data received
-                        txtStringLength.setText("Tamaño del String = " + String.valueOf(dataLength));
-
-                        if (recDataString.charAt(0) == '#')                                //if it starts with # we know it is what we are looking for
-                        {
-                            String sensor0 = recDataString.substring(1, 5);             //get sensor value from string between indices 1-5
-                            String sensor1 = recDataString.substring(6, 10);            //same again...
-                            String sensor2 = recDataString.substring(11, 15);
-                            String sensor3 = recDataString.substring(16, 20);
-
-                            if (sensor0.equals("1.00"))
-                                sensorView0.setText("Encendido");    //update the textviews with sensor values
-                            else
-                                sensorView0.setText("Apagado");    //update the textviews with sensor values
-                            sensorView1.setText(sensor1);
-                            sensorView2.setText(sensor2);
-                            sensorView3.setText(sensor3);
-                            //sensorView3.setText(" Sensor 3 Voltage = " + sensor3 + "V");
-                        }
+                        sensorView.setText("Datos recibidos = " + dataInPrint);
                         recDataString.delete(0, recDataString.length());                    //clear all string data
-                        // strIncom =" ";
-                        dataInPrint = " ";
                     }
                 }
             }
         };
-
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         checkBTState();
-
-
-        // Set up onClick listeners for buttons to send 1 or 0 to turn on/off LED
-        btnOff.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("2");    // Send "0" via Bluetooth
-                Toast.makeText(getBaseContext(), "Apagar el LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btnOn.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("1");    // Send "1" via Bluetooth
-                Toast.makeText(getBaseContext(), "Encender el LED", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 
