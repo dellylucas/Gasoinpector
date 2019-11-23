@@ -34,17 +34,25 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         //Link the buttons and textViews to respective views
         sensorView = findViewById(R.id.sensorView);
-
+        final StringBuilder recDataString = new StringBuilder();
         bluetoothIn = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-                {
-                    if (message.what == handlerState) {                      //if message is what we want
-                        String readMessage = (String) message.obj;
-                        sensorView.setText(readMessage);
+                if (message.what == handlerState) {                      //if message is what we want
+                    String readMessage = (String) message.obj;
+                    recDataString.append(readMessage);                                    //keep appending to string until ~
+                    int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
+
+                    if (endOfLineIndex > 0) {
+                        String dataInPrint = recDataString.substring(0, endOfLineIndex);
+                        if (!dataInPrint.equals("0")) {
+                            sensorView.setText("");
+                            sensorView.setText(dataInPrint);
+                        }
+                        recDataString.delete(0, recDataString.length());
                     }
-                    return false;
                 }
+                return false;
             }
         });
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
@@ -148,6 +156,7 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 //if you cannot write, close the application
                 Toast.makeText(getBaseContext(), "La Conexión fallo", Toast.LENGTH_LONG).show();
+                btAdapter.disable();
                 finish();
             }
         }
