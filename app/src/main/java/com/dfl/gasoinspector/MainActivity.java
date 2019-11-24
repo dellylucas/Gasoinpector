@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        btAdapter.disable();
+        btAdapter.cancelDiscovery();
         super.onBackPressed();
     }
 
@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 //if you cannot write, close the application
                 Toast.makeText(getBaseContext(), "La Conexión fallo", Toast.LENGTH_LONG).show();
-                btAdapter.disable();
+                btAdapter.cancelDiscovery();
                 finish();
             }
         }
