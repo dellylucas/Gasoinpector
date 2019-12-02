@@ -1,12 +1,55 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    android:background="@drawable/fondo_two">
+    <TextView
+        android:id="@+id/texMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:text="Maxima distancia: "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+<androidx.appcompat.widget.AppCompatEditText
+    android:id="@+id/totalLevel"
+    android:layout_width="40dp"
+    android:layout_marginTop="10dp"
+    android:layout_height="wrap_content"
+    android:layout_toEndOf="@+id/texMax"
+    android:inputType="numberSigned"
+    android:textSize="20sp"
+    android:text="20"/>
+    <TextView
+        android:id="@+id/texLit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/texMax"
+        android:text="Litros Totales: "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/totalLit"
+        android:layout_width="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/texMax"
+        android:layout_toEndOf="@+id/texMax"
+        android:inputType="numberSigned"
+        android:textSize="20sp"
+        android:text="5"/>
 
     <TextView
         android:id="@+id/sensorView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resultado: ????"
+        android:layout_below="@+id/image"
+        android:layout_centerHorizontal="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+    <ImageView
+        android:layout_centerInParent="true"
+        android:id="@+id/image"
+        android:layout_width="300dp"
+        android:layout_height="300dp" />
 </RelativeLayout>

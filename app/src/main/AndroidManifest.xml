@@ -28,6 +28,7 @@
             android:theme="@style/AppThemeAll" />
         <activity
             android:name=".MainActivity"
+            android:label="Mi Tanque"
             android:theme="@style/AppThemeAll" />
     </application>
 

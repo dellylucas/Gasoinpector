@@ -8,8 +8,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.race604.drawable.wave.WaveDrawable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +24,9 @@ public class MainActivity extends Activity {
 
     TextView sensorView;
     Handler bluetoothIn;
-
+    private WaveDrawable mWaveDrawable;
+    private EditText totalLevel;
+    private EditText totalLit;
     final int handlerState = 0;                         //used to identify handler message
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -34,6 +40,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         //Link the buttons and textViews to respective views
         sensorView = findViewById(R.id.sensorView);
+        totalLevel = findViewById(R.id.totalLevel);
+        totalLit = findViewById(R.id.totalLit);
+
         final StringBuilder recDataString = new StringBuilder();
         bluetoothIn = new Handler(new Handler.Callback() {
             @Override
@@ -45,9 +54,14 @@ public class MainActivity extends Activity {
 
                     if (endOfLineIndex > 0) {
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);
-                        if (!dataInPrint.equals("0")) {
-                            sensorView.setText("");
-                            sensorView.setText(dataInPrint);
+                        if (!dataInPrint.equals("0") && totalLevel.getText() != null && totalLit.getText() != null) {
+                            int progress = Integer.parseInt(dataInPrint),
+                                    totalTank = Integer.parseInt(totalLevel.getText().toString()),
+                                    totalLiterInto = Integer.parseInt(totalLit.getText().toString());
+                            mWaveDrawable.setLevel(getLevel(progress, totalTank));
+
+                            float totalLiter = (float) ((totalLiterInto * (totalTank - progress)) / (float) totalTank);
+                            sensorView.setText(totalLiter + " Lts.");
                         }
                         recDataString.delete(0, recDataString.length());
                     }
@@ -57,6 +71,24 @@ public class MainActivity extends Activity {
         });
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         checkBTState();
+
+        ImageView mImageView = (ImageView) findViewById(R.id.image);
+        mWaveDrawable = new WaveDrawable(this, R.drawable.gasolinet);
+        mImageView.setImageDrawable(mWaveDrawable);
+
+
+        mWaveDrawable.setWaveAmplitude(6);
+        mWaveDrawable.setWaveLength(268);
+        mWaveDrawable.setWaveSpeed(5);
+    }
+
+    private int getLevel(int progress, int totalTank) {
+        int percent;
+        percent = (10000 * (totalTank - progress)) / totalTank;
+        if (percent < 400) percent = 400;
+        else if (percent > 9595) percent = 9595;
+
+        return percent;
     }
 
 
@@ -67,7 +99,8 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        btAdapter.cancelDiscovery();
+        btAdapter.disable();
+        btAdapter.enable();
         super.onBackPressed();
     }
 
@@ -156,7 +189,6 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 //if you cannot write, close the application
                 Toast.makeText(getBaseContext(), "La Conexión fallo", Toast.LENGTH_LONG).show();
-                btAdapter.cancelDiscovery();
                 finish();
             }
         }
