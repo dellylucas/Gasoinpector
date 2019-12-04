@@ -61,7 +61,10 @@ public class MainActivity extends Activity {
                             mWaveDrawable.setLevel(getLevel(progress, totalTank));
 
                             float totalLiter = (float) ((totalLiterInto * (totalTank - progress)) / (float) totalTank);
-                            sensorView.setText(totalLiter + " Lts.");
+                            if (totalLiter < 0)
+                                sensorView.setText("0 Lts.");
+                            else
+                                sensorView.setText(totalLiter + " Lts.");
                         }
                         recDataString.delete(0, recDataString.length());
                     }

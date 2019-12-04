@@ -19,7 +19,7 @@
     android:layout_toEndOf="@+id/texMax"
     android:inputType="numberSigned"
     android:textSize="20sp"
-    android:text="20"/>
+    android:text="15"/>
     <TextView
         android:id="@+id/texLit"
         android:layout_width="wrap_content"
